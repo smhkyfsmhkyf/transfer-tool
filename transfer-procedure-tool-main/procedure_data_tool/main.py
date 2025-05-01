@@ -275,6 +275,7 @@ def main():
     row_index +=1
 
     #######################################################################################################################
+<<<<<<< HEAD
     make_document_button = ttk.Button(window, text="6. Create Transfer Procedure reference sheet", command=lambda: make_doc())
     make_document_button.grid(row=row_index, column= 0, padx = 13, pady=15, sticky="w")
     
