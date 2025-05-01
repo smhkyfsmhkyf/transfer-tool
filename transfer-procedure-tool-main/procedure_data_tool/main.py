@@ -78,6 +78,7 @@ def make_doc():
     writer.buildDocument(route_s[listbox_index], route_d[listbox_index], pits)
     try:
         writer.save(filename)
+
         ### SH 2025-03-25 Original code but was throwing error. Changed to os.startfile. Was os.system(f'start {filename}')      
         os.startfile(filename)
         
@@ -253,10 +254,9 @@ def main():
     row_index +=1
 
     #######################################################################################################################
-    make_document_button = ttk.Button(window, text="6. Generate procedure development doc", command=lambda: make_doc())
+    make_document_button = ttk.Button(window, text="6. Create Transfer Procedure reference sheet", command=lambda: make_doc())
     make_document_button.grid(row=row_index, column= 0, padx = 13, pady=15, sticky="w")
     
-    # listbox.bind("<<ListboxSelect>>", preview_graph)
     src_entry.bind("<KeyRelease>", src_filter)
     dst_entry.bind("<KeyRelease>", dst_filter)
     src_filter()
