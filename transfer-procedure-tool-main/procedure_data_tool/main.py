@@ -173,6 +173,10 @@ def main():
     logo_path = os.path.join(current_dir, "utils", "H2C-Logo.png")
     logo = tk.PhotoImage(file=logo_path)
     logo_small = logo.subsample(3,3)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8814f6d (reuse ui labels)
     label = ttk.Label(window, image = logo_small)
     label.grid(row= row_index, column = 0, sticky= "w", padx= 15)
     row_index += 1
