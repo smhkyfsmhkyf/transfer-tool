@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-def makeGraph(inventory, route, direct_route, layout_type='Kamada Kawai'):
+def makeGraph(inventory, route, direct_route):
     G = nx.Graph()
 
     color_map = []
@@ -56,7 +56,7 @@ def makeGraph(inventory, route, direct_route, layout_type='Kamada Kawai'):
         "Non-DVI Valve" : "lightgray",
     }
     try:
-        pos = layout_functions[layout_type.get()](G)
+        pos = nx.kamada_kawai_layout(G)
     except KeyError:
         raise ValueError("Invalid layout type specified")
     

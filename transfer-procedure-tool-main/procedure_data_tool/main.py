@@ -59,13 +59,13 @@ def refresh_listbox():
 
 ###Generates graph when click route option in listbox. 
 ### !!!Currently commented out!!!
-def preview_graph(event):
+def preview_graph():
     selection = listbox.curselection()
     if selection:
         index = selection[0]
 ## SH Commented out so graph wouldn't generate when click in listbox. !!!Need to create button instead!!!         
         if index<len(route_s):
-            gr.makeGraph(components, route_d[index], route_s[index], graphing_algorithm)
+            gr.makeGraph(components, route_d[index], route_s[index])
 
 
 ### Runs when click "Generate procedure development doc" button.        
@@ -247,21 +247,16 @@ def main():
     listbox.grid(row=row_index, column= 1, columnspan=5, sticky="we", padx=15, pady=15, rowspan=2)
 
     row_index +=1
+    preview_graph_button = ttk.Button(window, text="5. Preview as graph", command=lambda: preview_graph())
+    preview_graph_button.grid(row=row_index, column= 0, padx=13, pady=10, sticky= "w")
+
+    row_index +=1
+
     #######################################################################################################################
-    global graphing_algorithm 
-    graphing_algorithm = tk.StringVar(window)
-    graphing_algorithm.set(value="Zig-zag")
-    label = ttk.Label(window, text="Graph style (optional): ")
-    label.grid(row=row_index, column= 0, padx=18, sticky= "w")
-    algorithm_dropdown = ttk.OptionMenu(window, graphing_algorithm, "Zig-zag", "Pyramid", "Arch")
-    algorithm_dropdown.grid(row=row_index, column= 0, columnspan=1, padx=20 )
-    
-    row_index += 1
-    #######################################################################################################################
-    make_document_button = ttk.Button(window, text="5. Generate procedure development doc", command=lambda: make_doc())
+    make_document_button = ttk.Button(window, text="6. Generate procedure development doc", command=lambda: make_doc())
     make_document_button.grid(row=row_index, column= 0, padx = 13, pady=15, sticky="w")
     
-    listbox.bind("<<ListboxSelect>>", preview_graph)
+    # listbox.bind("<<ListboxSelect>>", preview_graph)
     src_entry.bind("<KeyRelease>", src_filter)
     dst_entry.bind("<KeyRelease>", dst_filter)
     src_filter()
