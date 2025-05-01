@@ -166,8 +166,8 @@ def main():
     logo = tk.PhotoImage(file=logo_path)
     logo_small = logo.subsample(3,3)
 
-    logo_label = ttk.Label(window, image = logo_small)
-    logo_label.grid(row= row_index, column = 0, sticky= "w", padx= 15)
+    label = ttk.Label(window, image = logo_small)
+    label.grid(row= row_index, column = 0, sticky= "w", padx= 15)
     row_index += 1
     sep = tk.ttk.Separator(window, orient='horizontal')
     sep.grid(row = row_index, column = 4, sticky="e", columnspan = 4)
@@ -177,8 +177,8 @@ def main():
     global header_message 
     header_message = tk.StringVar()
     header_message.set("Using data from: "+ file_path)
-    label3 = ttk.Label(window, textvariable = header_message, wraplength=500, anchor="w", justify= "left")
-    label3.grid(row = row_index, columnspan=3, rowspan=1, padx=15, pady=10,sticky = "w")
+    label = ttk.Label(window, textvariable = header_message, wraplength=500, anchor="w", justify= "left")
+    label.grid(row = row_index, columnspan=3, rowspan=1, padx=15, pady=10,sticky = "w")
     file_button = ttk.Button(window, text= "Or use a different file", command=lambda: load_new_file())
     file_button.grid(row = row_index, column = 3, padx= 15, pady=10)
     row_index += 1
@@ -194,8 +194,8 @@ def main():
 
     row_index += 1
     #######################################################################################################################
-    label0 = ttk.Label(window, text="1. Select source tank (eg. PUMP):")
-    label0.grid(row=row_index, column= 0, pady = 2, padx=15,sticky = "w")
+    label = ttk.Label(window, text="1. Select source tank (eg. PUMP):")
+    label.grid(row=row_index, column= 0, pady = 2, padx=15,sticky = "w")
     global src_entry
     s = tk.StringVar(window, value= "AP01A-")
     src_entry = ttk.Entry(window, textvariable=s)
@@ -209,8 +209,8 @@ def main():
 
     row_index += 1
     #######################################################################################################################
-    label1 = ttk.Label(window, text="2. Select receiving tank (eg. TKR):")
-    label1.grid(row=row_index, column= 0, pady = 2, padx=15, sticky = "w")
+    label= ttk.Label(window, text="2. Select receiving tank (eg. TKR):")
+    label.grid(row=row_index, column= 0, pady = 2, padx=15, sticky = "w")
     global dst_entry
     dst_entry = ttk.Entry(window)
     dst_entry.grid(row=row_index, column= 2, pady=15, padx=15, sticky="w")
@@ -225,8 +225,8 @@ def main():
     #######################################################################################################################
     find_routes_button = ttk.Button(window, text="3. Generate route options", command=lambda: create_route_options())
     find_routes_button.grid(row=row_index, column= 0, padx=13, pady=10, sticky= "w")
-    label2 = ttk.Label(window, text="Alternatives needed (optional):")
-    label2.grid(row=row_index, column= 2, padx=6, sticky= 'e')
+    label = ttk.Label(window, text="Alternatives needed (optional):")
+    label.grid(row=row_index, column= 2, padx=6, sticky= 'e')
     global alternatives 
     alternatives = ttk.Entry(window, width= 7)
     alternatives.insert(0, "1") 
@@ -238,8 +238,8 @@ def main():
 
     row_index += 1
     #######################################################################################################################
-    label3 = ttk.Label(window, text="4. Click on a route option to preview graph")
-    label3.grid(row=row_index, column= 0, padx=15, sticky= "w")
+    label = ttk.Label(window, text="4. Select a route option")
+    label.grid(row=row_index, column= 0, padx=15, sticky= "w")
     global listbox
     global listbox_index
     listbox_index = 0
@@ -251,8 +251,8 @@ def main():
     global graphing_algorithm 
     graphing_algorithm = tk.StringVar(window)
     graphing_algorithm.set(value="Zig-zag")
-    label4 = ttk.Label(window, text="Graph style (optional): ")
-    label4.grid(row=row_index, column= 0, padx=18, sticky= "w")
+    label = ttk.Label(window, text="Graph style (optional): ")
+    label.grid(row=row_index, column= 0, padx=18, sticky= "w")
     algorithm_dropdown = ttk.OptionMenu(window, graphing_algorithm, "Zig-zag", "Pyramid", "Arch")
     algorithm_dropdown.grid(row=row_index, column= 0, columnspan=1, padx=20 )
     
