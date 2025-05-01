@@ -3,11 +3,11 @@
 ### Run debug from this class.
 
 from tabnanny import filename_only
-from procedure_data_tool.utils.docwriter import DocWriter 
-import procedure_data_tool.utils.excelData as ex
-import procedure_data_tool.utils.graph as gr
-from procedure_data_tool.utils.valve3 import Valve3
-from procedure_data_tool.utils.split import Split
+from utils.docwriter import DocWriter 
+import utils.excelData as ex
+import utils.graph as gr
+from utils.valve3 import Valve3
+from utils.split import Split
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
