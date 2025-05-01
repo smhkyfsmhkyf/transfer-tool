@@ -3,9 +3,9 @@ from docx import Document
 from indexed import IndexedOrderedDict
 from docx.shared import Pt
 from docx.shared import RGBColor
-from procedure_data_tool.utils.valve2 import Valve2
-from procedure_data_tool.utils.valve3 import Valve3
-from procedure_data_tool.utils.line import Line
+from utils.valve2 import Valve2
+from utils.valve3 import Valve3
+from utils.line import Line
 import os
 
 class DocWriter():

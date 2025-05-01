@@ -1,4 +1,4 @@
-from procedure_data_tool.utils.valve import Valve
+from utils.valve import Valve
 
 ### 4/2 SH seems to be a category when running main.process_route()
 ### Category for 3-way valves?

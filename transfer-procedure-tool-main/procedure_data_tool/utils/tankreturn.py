@@ -1,4 +1,4 @@
-from procedure_data_tool.utils.node import Node
+from utils.node import Node
 
 class TankReturn(Node):
     directions = 1
