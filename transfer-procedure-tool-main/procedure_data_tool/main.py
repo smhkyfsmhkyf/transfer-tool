@@ -170,13 +170,11 @@ def main():
     #######################################################################################################################
     row_index = 0
     ###Before "WRPS-new-logo.png"
+    current_dir = os.path.dirname(__file__)
     logo_path = os.path.join(current_dir, "utils", "H2C-Logo.png")
     logo = tk.PhotoImage(file=logo_path)
     logo_small = logo.subsample(3,3)
-<<<<<<< HEAD
-=======
 
->>>>>>> 8814f6d (reuse ui labels)
     label = ttk.Label(window, image = logo_small)
     label.grid(row= row_index, column = 0, sticky= "w", padx= 15)
     row_index += 1
@@ -210,7 +208,6 @@ def main():
     #######################################################################################################################
     global show_all
     show_all = tk.BooleanVar(value=False)
-    # checkbox = ttk.Checkbutton(window, text="Make all components available for selection (valves, nozzles, etc)", variable=show_all, command = toggle_boolean, anchor = "w")
     checkbox = ttk.Checkbutton(window, text="Make all components available for selection (valves, nozzles, etc)", variable=show_all, command = toggle_boolean)
     checkbox.grid(row=row_index, column=0, padx=15, sticky="w")
 
@@ -275,7 +272,7 @@ def main():
     row_index +=1
 
     #######################################################################################################################
-<<<<<<< HEAD
+
     make_document_button = ttk.Button(window, text="6. Create Transfer Procedure reference sheet", command=lambda: make_doc())
     make_document_button.grid(row=row_index, column= 0, padx = 13, pady=15, sticky="w")
     
