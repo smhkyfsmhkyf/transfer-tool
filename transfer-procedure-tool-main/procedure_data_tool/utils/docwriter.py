@@ -48,7 +48,6 @@ class DocWriter():
         directly_used_lines = []
         for component in simple_route:
             if component.pit and component.pit in pits:
-                
                 directly_used_pits[component.pit] = pits[component.pit] 
             if (type(component) == Line):
                 directly_used_lines.append(component)            
