@@ -26,11 +26,15 @@ class Pit:
     def add_used_component(self, node):
             self.components.append(node)
 
-    def update(self, **kwargs):
-            self.tfsps_transmitters.append(kwargs['tfsps_transmitter'])
-            self.tfsps_pmids.append(kwargs['tfsps_pmid'])
-            self.annulus_leak_detectors.append(kwargs['annulus_leak_detector'])
-            self.annulus_leak_detector_pmids.append(kwargs['annulus_leak_detector_pmid'])
+    def add_missing_fields(self, **kwargs):
+            if kwargs['tfsps_transmitter'] is not None:
+                self.tfsps_transmitters.append(kwargs['tfsps_transmitter'])
+            if kwargs['tfsps_pmid'] is not None:
+                self.tfsps_pmids.append(kwargs['tfsps_pmid'])
+            if kwargs['annulus_leak_detector'] is not None:
+                self.annulus_leak_detectors.append(kwargs['annulus_leak_detector'])
+            if kwargs['annulus_leak_detector_pmid'] is not None:
+                self.annulus_leak_detector_pmids.append(kwargs['annulus_leak_detector_pmid'])
             if kwargs['in_pit_heater'] is not None:
                    self.in_pit_heaters.append(kwargs['in_pit_heater']) 
 
