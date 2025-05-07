@@ -15,7 +15,7 @@ from tkinter import ttk
 from ttkthemes import ThemedStyle
 
 import os
-
+save_file_path = os.path.dirname(__file__)
 
 ### Runs when click "Generate Route Options" button
 def process_route(route):
@@ -70,6 +70,7 @@ def preview_graph():
 
 ### Runs when click "Generate procedure development doc" button.        
 def make_doc():
+    global save_file_path
     src = source.get()
     dst = destination.get()
     writer = DocWriter(src + " to " + dst + " draft procedure data:")
@@ -77,12 +78,12 @@ def make_doc():
     ### SH note about the directory - file automatically goes to whatever folder the program is stored in.
     writer.buildDocument(route_s[listbox_index], route_d[listbox_index], pits)
     try:
-        writer.save(filename)
-
-        ### SH 2025-03-25 Original code but was throwing error. Changed to os.startfile. Was os.system(f'start {filename}')      
-        os.startfile(filename)
+        path = save_file_path + "/" + filename
+        print(path)
+        # writer.save(path)
+        writer.save(path)
+        os.startfile(path)
         
-
     except PermissionError as e:
         if e.errno == 13:
             messagebox.showerror("Error", f"The file '{filename}' might be open or in use. Please close the file and try again.")
@@ -122,32 +123,35 @@ def load_new_file(*args):
             header_message.set("Using data from: "+ new_file_path)
             components, pits =  ex.importComponents(new_file_path)
     except:
-        messagebox.warning("Warning", "File not supported")
+        messagebox.showwarning("Warning", "File not supported")
         return
+
+def choose_save_location(*args):
+    global save_file_path
+    try:
+        save_file_path = filedialog.askdirectory()
+        if (save_file_path):
+            save_location_message.set("Word file will be saved in :\n" + save_file_path)
+    except:
+        messagebox.showwarning("Warning", "Not a valid save location")
+
+    return
+
 
 ### Loads the UI (appearance),also contains the default source data excel file.
 def main():
-    window = tk.Tk()
-    window.title("Waste Transfer Procedure Tool")
-    style = ThemedStyle(window)
-    style.set_theme("breeze")
-    global file_path
-    #25-03-19 SH change: !!!different file for testing purposes!!!
-    #old file path
-    #file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/1 Transfers/1C - Procedure Review Tools/MasterProcedureData.xlsx'
-    #experimental file path 
-    file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/2 Team Members/Sarah Hunter/DONT USE MasterProcedureData 2025-03-19.xlsx'
+    defult_excel_file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/2 Team Members/Sarah Hunter/DONT USE MasterProcedureData 2025-03-19.xlsx'
     
+    current_dir = os.path.dirname(__file__)
+    global excel_file_path
+    excel_file_path = defult_excel_file_path
     global components
-    ### comes from excel file
     global pits 
-
-    ### first thing that runs 
+    
     try: 
-        components, pits =  ex.importComponents(file_path)
-        print(components)
+        components, pits =  ex.importComponents(excel_file_path)
     except Exception as e:
-        filewarning ="Unable to find file at:\n\n" + file_path + "\n\n Please browse for Excel data file"
+        filewarning ="Unable to find file at:\n\n" + excel_file_path + "\n\n Please browse for Excel data file"
         messagebox.showwarning("Warning", filewarning)
         components, pits =  ex.importComponents(browse_file())
     
@@ -159,14 +163,16 @@ def main():
         dst_filter()
 
     ###UI (appearance) stuff
+    window = tk.Tk()
+    window.title("Waste Transfer Procedure Tool")
+    style = ThemedStyle(window)
+    style.set_theme("breeze")
     #######################################################################################################################
     row_index = 0
-    current_dir = os.path.dirname(__file__)
     ###Before "WRPS-new-logo.png"
     logo_path = os.path.join(current_dir, "utils", "H2C-Logo.png")
     logo = tk.PhotoImage(file=logo_path)
     logo_small = logo.subsample(3,3)
-
     label = ttk.Label(window, image = logo_small)
     label.grid(row= row_index, column = 0, sticky= "w", padx= 15)
     row_index += 1
@@ -177,15 +183,26 @@ def main():
     row_index += 1
     global header_message 
     header_message = tk.StringVar()
-    header_message.set("Using data from: "+ file_path)
+    header_message.set("Using data from:\n "+ excel_file_path)
     label = ttk.Label(window, textvariable = header_message, wraplength=500, anchor="w", justify= "left")
     label.grid(row = row_index, columnspan=3, rowspan=1, padx=15, pady=10,sticky = "w")
-    file_button = ttk.Button(window, text= "Or use a different file", command=lambda: load_new_file())
+    file_button = ttk.Button(window, text= "Or use a different Excel file", command=lambda: load_new_file())
     file_button.grid(row = row_index, column = 3, padx= 15, pady=10)
     row_index += 1
+
+    global save_location_message
+    save_location_message = tk.StringVar()
+    save_location_message.set("Word file will be saved in :\n" + current_dir)
+    label = ttk.Label(window, textvariable = save_location_message, wraplength=500, anchor="w", justify= "left")
+    label.grid(row = row_index, columnspan=3, rowspan=1, padx=15, pady=10,sticky = "w")
+    file_button = ttk.Button(window, text= "Or save somewhere else", command=lambda: choose_save_location())
+    file_button.grid(row = row_index, column = 3, padx= 15, pady=10)
+    row_index += 1
+
     sep = tk.ttk.Separator(window, orient='horizontal')
     sep.grid(row = row_index, column = 0,sticky="ew", columnspan = 4)
     row_index += 1
+
     #######################################################################################################################
     global show_all
     show_all = tk.BooleanVar(value=False)
