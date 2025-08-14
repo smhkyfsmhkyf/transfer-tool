@@ -1,3 +1,7 @@
+from ast import If
+from logging import _srcfile
+from multiprocessing import Value
+from operator import index
 from openpyxl import load_workbook
 from utils.valve import Valve
 from utils.valve2 import Valve2
@@ -8,11 +12,12 @@ from utils.split import Split
 from utils.pump import Pump
 from utils.tankreturn import TankReturn
 from utils.pit import Pit
+from tkinter import messagebox
 
 ###
-
 ###file for regular use: '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/1 Transfers/1C - Procedure Review Tools/MasterProcedureData.xlsx'
 ### TEST FILE !!!change back file to regular use file when complete !!!
+
 def importComponents(filepath='//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/1 Transfers/1C - Procedure Review Tools/MasterProcedureData.xlsx'):
     try:
         wb = load_workbook(filename=filepath, data_only=True)
@@ -60,24 +65,51 @@ def importComponents(filepath='//hanford/data/sitedata/WasteTransferEng/Waste Tr
         None: Valve
     }
 
+    # Dictionary for virtual keys that were created to establish a relationship between each EIN and Connection1, Connection2, Connection3.
+    connections_set_id = { }
+
     connections_sheet = wb['Transfer Route Components']
-    conections_matrix = connections_sheet["F2:H400"]
+    connections_matrix = connections_sheet["F2:H400"]
+    connections_alias_matrix = connections_sheet["I2:K400"]
+    connections_matrix_col = connections_sheet.iter_rows(min_row=2, min_col=6, max_col=8, values_only=True)
+    connections_alias_matrix_col = connections_sheet.iter_rows(min_row=2, min_col=9, max_col=11, values_only=True)
 
     #Initialize component objects into "components" dictionary. Key = Name, value = Component object
     for row in connections_sheet.iter_rows(min_row=2, values_only= True, max_row=350, max_col=15):
         component_name = row[0]
         component_type = row[1]
         components[component_name] = types[component_type](component_name, pit = row[2], jumper = row[3], dvi = row[4], field_label = row[12])
+        
+ 
 
     #For all component object in "components". Call their .conect() method to its neighbors
-    for component, neighbors in zip(components.values(), conections_matrix):
-        for neighbor in neighbors:
+    for row_index1, (component, neighbors) in enumerate(zip(components.values(), connections_matrix)):
+        for col_index1, neighbor in enumerate(neighbors):
             #if the neighbor listed in excel exists as an initialized object in the "components" dictionary
             if neighbor.value in components:
                 #if neighbor object != None (might be a reduntant check)
                 if neighbor.value:
                     component.connect(components[neighbor.value])
+                    set_id = int(str(row_index1 + 1) + str(col_index1 + 1))
+                    set_id_dict = {set_id, component}
+                    #keys = set_id_dict.keys()
+                    #print(keys)
+                    #print(f" neighbor loop {set_id} Connected {component} to {components[neighbor.value]}")
+                    
 
-    return components, pits
+    ###Create relationship between connection and what should be printed on the word document on checklist3
+    for row_index, (connections_matrix_row, connections_alias_matrix_row) in enumerate(zip(connections_matrix_col, connections_alias_matrix_col)):
+        for col_index, (connections_matrix_value, connections_alias_matrix_value) in enumerate(zip(connections_matrix_row, connections_alias_matrix_row)):
+            if connections_matrix_value:
+                #This creates a unique key for each connection
+                connections_set_id[component_name] = {
+                 int(str(row_index + 1) + str(col_index + 1)),
+                 connections_matrix_value,
+                 connections_alias_matrix_value
+                }             
+                print(f"connections_set_id[component_name: {connections_set_id[component_name]}")
 
+    print(f"Is the desired variable in connections_set_id? {'{None, \'AZVP-NOZ-E\', 3012}'  in connections_set_id}")
+
+    return components, pits, connections_set_id
 importComponents()

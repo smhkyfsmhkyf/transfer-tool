@@ -1,4 +1,6 @@
 from utils.valve import Valve
+from tkinter import messagebox
+
 
 ### 4/2 SH seems to be a category when running main.process_route()
 ### Category for 3-way valves?
@@ -6,8 +8,8 @@ from utils.valve import Valve
 class Valve3(Valve):
     directions = 3
     blocked_element = None
-    def __init__(self, ein, pit = None, jumper = None, field_label = None, dvi = None):
-        super().__init__(ein, pit= pit, jumper = jumper, field_label= field_label)
+    def __init__(self, ein, pit = None, jumper = None, field_label = None, connections_set_id = None, dvi = None):
+        super().__init__(ein, pit= pit, jumper = jumper, field_label= field_label, connections_set_id = connections_set_id)
         self.directions = 3
         self.ein = ein
         self.connections = []
@@ -16,7 +18,7 @@ class Valve3(Valve):
         self.position
         self.dvi_credited = dvi
         self.blocked_element
-
+        
     def setBlockedElement(self, route):
         for connection in self.connections:
             if connection in route:
@@ -34,6 +36,7 @@ class Valve3(Valve):
                         pass
                     else:
                         self.position = "BLOCK " + next_connection.EIN()
+                        # print("next     " + self.position)
 
     def setPosition(self, route = None):
         self.setBlockedElement(route=route)

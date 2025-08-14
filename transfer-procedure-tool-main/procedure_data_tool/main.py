@@ -16,13 +16,13 @@ from ttkthemes import ThemedStyle
 
 import os
 
-
+#messagebox.showinfo(title= None, message = "This is the beginning of main.")
 ### Runs when click "Generate Route Options" button
 def process_route(route):
     route_with_dvi = []
+### Receives data from excelData
 ### Takes readings from "Transfer Route Components" sheet on the master procedure data spreadsheet
-### ?Seems to take readings from excel sheet and categorizes them. ?
-### ?Gets data from excel data sheet, that comes to this method, then to excelData, then to whichever category class (e.g. valve2.py) ?
+
     for element in route:
         element.setPosition(route)
         route_with_dvi.append(element)
@@ -31,12 +31,12 @@ def process_route(route):
             route_with_dvi.extend(element.getDVI())
     return route_with_dvi
 
-### 
+
 ### Runs when click "Generate route options" button, inside of create_route_options()
 def find_routes(source, destination, alts = 1):
     return components[source].routesTo(components[destination], alts)
 
-### 
+
 ### Runs when click "Generate route options" button
 def create_route_options():
     global route_s
@@ -63,7 +63,6 @@ def preview_graph():
     selection = listbox.curselection()
     if selection:
         index = selection[0]
-## SH Commented out so graph wouldn't generate when click in listbox. !!!Need to create button instead!!!         
         if index<len(route_s):
             gr.makeGraph(components, route_d[index], route_s[index])
 
@@ -79,8 +78,7 @@ def make_doc():
     try:
         writer.save(filename)
         ### SH 2025-03-25 Original code but was throwing error. Changed to os.startfile. Was os.system(f'start {filename}')      
-        os.startfile(filename)
-        
+        os.startfile(filename)       
 
     except PermissionError as e:
         if e.errno == 13:
@@ -135,20 +133,20 @@ def main():
     #old file path
     #file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/1 Transfers/1C - Procedure Review Tools/MasterProcedureData.xlsx'
     #experimental file path 
-    file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/2 Team Members/Sarah Hunter/DONT USE MasterProcedureData 2025-03-19.xlsx'
+    file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/2 Team Members/Sarah Hunter/transfer-pro - related files/DONT USE MasterProcedureData 2025-03-19.xlsx'
     
     global components
-    ### comes from excel file
+    
     global pits 
 
-    ### first thing that runs 
+    global connections_set_id
+
     try: 
-        components, pits =  ex.importComponents(file_path)
-        print(components)
+        components, pits, connections_set_id =  ex.importComponents(file_path)
     except Exception as e:
         filewarning ="Unable to find file at:\n\n" + file_path + "\n\n Please browse for Excel data file"
         messagebox.showwarning("Warning", filewarning)
-        components, pits =  ex.importComponents(browse_file())
+        components, pits, connections_set_id =  ex.importComponents(browse_file())
     
     global displayed_nodes 
     displayed_nodes = components.keys()

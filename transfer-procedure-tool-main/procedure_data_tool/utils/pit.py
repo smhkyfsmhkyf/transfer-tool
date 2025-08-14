@@ -1,3 +1,4 @@
+from tkinter import messagebox
 class Pit:
     def __init__(self, name, leak_detector_id=None, leak_detector_pmid=None,
                  leak_detector_tfsps=None, tfsps_transmitter=None, tfsps_pmid=None,
@@ -23,6 +24,7 @@ class Pit:
         self.tfmcs = tfmcs
         self.tsr_structure = tsr_structure
 
+    
     def add_used_component(self, node):
             self.components.append(node)
 

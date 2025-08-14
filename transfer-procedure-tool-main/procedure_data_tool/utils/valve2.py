@@ -1,13 +1,14 @@
 from utils.valve import Valve
 from utils.split import Split
+from tkinter import messagebox
 
-### 4/2 SH seems to be a category when running main.process_route()
-### Category for 2-way valves?
+
+### Category for 2-way valves
 
 class Valve2(Valve):
     directions = 2
-    def __init__(self, ein, pit = None, jumper = None, field_label = None, dvi = None):
-        super().__init__(ein, pit= pit, jumper = jumper, field_label= field_label) 
+    def __init__(self, ein, pit = None, jumper = None, field_label = None, connections_set_id = None, dvi = None):
+        super().__init__(ein, pit= pit, jumper = jumper, field_label= field_label, connections_set_id = connections_set_id) 
         self.ein = ein
         self.directions = 2 
         self.connections = []
@@ -16,7 +17,7 @@ class Valve2(Valve):
         self.position = "CLOSED"
         self.dvi_credited = dvi
         self.dvi_used = "NO"
-
+    
     def setPosition(self, route = None, forced = None):
             if forced == "CLOSED":
                 self.position = "CLOSED"

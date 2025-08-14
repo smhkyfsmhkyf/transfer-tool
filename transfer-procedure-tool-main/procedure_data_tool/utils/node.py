@@ -1,4 +1,5 @@
 from collections import deque
+from tkinter import messagebox
 
 class Node:
     connections = []
@@ -14,11 +15,13 @@ class Node:
     color = 'lightgray'
     size = 50
     field_label = None
-    def __init__(self, ein, pit, jumper, field_label):
+    connections_set_id = None
+    def __init__(self, ein, pit, jumper, field_label, connections_set_id):
         self.ein = ein
         self.pit = pit
         self.jumper = jumper
         self.field_label = field_label
+        self.connections_set_id = connections_set_id
         self.directions
         self.connections
         # self.dvi_used
@@ -43,7 +46,11 @@ class Node:
 
     def setJumper(self, jumper):
         self.jumper = jumper
-
+    
+    def setConnectionSetID(self, connections_set_id):
+        self.connections_set_id = connections_set_id
+    
+    
     def linkDVI(self, caller = None, stop = False):
         dvi_items = [self]
         for connection in self.connections:
@@ -61,9 +68,13 @@ class Node:
     def getColor(self):
         return self.color
 
+    ###connectBack is to allow for bidirectional connectivity
     def connectBack(self, node):
-        if node in self.connections: return
-        elif len(self.connections) < self.directions: self.connect(node)
+        if node in self.connections: 
+            return
+        ###directions is the maximum number of connections ? 
+        elif len(self.connections) < self.directions: 
+            self.connect(node)
         else: 
             print(self.EIN(), "has maximum number of connections, cant connect back")
             print(type(self))
@@ -71,11 +82,16 @@ class Node:
                 print(con.EIN())
         return
 
+    ###This allows adding more nodes
     def connect(self, *nodes):
+        #slices the connections list up to the maximum number of connections ?
         for node in nodes[:self.directions]:
+            #checks if the node exists, and if it's not already in the connections list, then it adds it.
             if node and node not in self.connections:
+                #if there is room in the list, then add  the node.
                 if len(self.connections) <= self.directions:
                     self.connections.append(node)
+                    #Calls connectBack() to make it bidirectional
                     node.connectBack(self)
                 else:  
                     print("has maximum number of connections", self.EIN())

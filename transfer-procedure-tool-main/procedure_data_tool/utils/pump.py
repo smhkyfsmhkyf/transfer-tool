@@ -1,9 +1,10 @@
 from utils.node import Node
+from tkinter import messagebox
 
 class Pump(Node):
     directions = 1
-    def __init__(self, ein, pit = None, jumper = None, field_label = None, dvi = None):
-        super().__init__(ein, pit = pit, jumper = jumper, field_label= field_label) 
+    def __init__(self, ein, pit = None, jumper = None, field_label = None, connections_set_id = None, dvi = None):
+        super().__init__(ein, pit = pit, jumper = jumper, field_label= field_label, connections_set_id = connections_set_id) 
         self.ein = ein
         self.directions = 100 
         self.node_1 = None

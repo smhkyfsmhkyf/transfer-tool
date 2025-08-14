@@ -1,10 +1,11 @@
 from utils.node import Node
+from tkinter import messagebox
 
 class Split(Node):
     directions = 3
     branching_element = None
-    def __init__(self, ein, pit = None, jumper = None, field_label = None, dvi = None):
-        super().__init__(ein, pit, jumper, field_label= field_label)
+    def __init__(self, ein, pit = None, jumper = None, field_label = None, connections_set_id = None, dvi = None):
+        super().__init__(ein, pit, jumper, field_label= field_label, connections_set_id = connections_set_id)
         self.directions = 3; 
         self.ein = ein
         self.connections = []
@@ -13,7 +14,7 @@ class Split(Node):
         self.onJumper = False
         self.color = "white"
         self.branching_element
-
+        
     def setBranchingElement(self, route):
         for connection in self.connections:
             if connection in route:

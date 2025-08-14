@@ -7,6 +7,7 @@ from utils.valve2 import Valve2
 from utils.valve3 import Valve3
 from utils.line import Line
 import os
+from tkinter import messagebox
 
 class DocWriter():
     def __init__(self, name="MyDoc"):
@@ -21,7 +22,7 @@ class DocWriter():
         font.color.rgb = RGBColor(0x42,0x42,0x42)
         run.add_text(self.name)
 
-        
+    
     def makeSection(self, name, instruction = None):
         paragraph = self.doc.add_paragraph()
         paragraph.paragraph_format.space_after = Pt(1)
@@ -95,9 +96,29 @@ class DocWriter():
             checklist3.add_run(pit.pit_nace).bold = True
             checklist3.add_run(" Tank Farm").bold = True
             for component in pit.components:
-                if (type(component) == Valve3 or type(component) == Valve2 ):
+                if (type(component) == Valve2 ):
                     checklist3.add_run("\n")
                     checklist3.add_run(component.EIN())
+                    checklist3.add_run("\t \t")
+                    checklist3.add_run(component.position)
+                    if (component.dvi_used == "YES" or component.dvi_used == "POS"):
+                        checklist3.add_run("\t ")
+                        checklist3.add_run("(Mark as DVI)").bold = True
+                if (type(component) == Valve3 ):
+                    checklist3.add_run("\n")
+                    ###!!!                
+                    #checklist3.add_run(component.EIN())
+                    #alias = self.equipment_to_alias.get(ein, ein)  # Get alias if exists, else use EIN
+                    #checklist3.add_run(alias)
+                    checklist3.add_run("\t \t")
+                    checklist3.add_run(component.position)
+                    
+                    ###!!!
+
+                    # ein = component.EIN()
+                    # alias = aliases.get(ein, ein)  # Use alias if available, otherwise use EIN
+                    # checklist3.add_run(alias)
+                    ###
                     checklist3.add_run("\t \t")
                     checklist3.add_run(component.position)
                     if (component.dvi_used == "YES" or component.dvi_used == "POS"):
