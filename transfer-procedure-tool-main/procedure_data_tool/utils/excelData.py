@@ -2,6 +2,7 @@ from ast import If
 from logging import _srcfile
 from multiprocessing import Value
 from operator import index
+import string
 from openpyxl import load_workbook
 from utils.valve import Valve
 from utils.valve2 import Valve2
@@ -13,12 +14,13 @@ from utils.pump import Pump
 from utils.tankreturn import TankReturn
 from utils.pit import Pit
 from tkinter import messagebox
+import pandas as pd
 
 ###
 ###file for regular use: '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/1 Transfers/1C - Procedure Review Tools/MasterProcedureData.xlsx'
 ### TEST FILE !!!change back file to regular use file when complete !!!
 
-def importComponents(filepath='//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/1 Transfers/1C - Procedure Review Tools/MasterProcedureData.xlsx'):
+def importComponents(filepath='//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/2 Team Members/Sarah Hunter/transfer-pro - related files/DONT USE MasterProcedureData 2025-03-19.xlsx'):
     try:
         wb = load_workbook(filename=filepath, data_only=True)
     except FileNotFoundError as e:
@@ -66,13 +68,37 @@ def importComponents(filepath='//hanford/data/sitedata/WasteTransferEng/Waste Tr
     }
 
     # Dictionary for virtual keys that were created to establish a relationship between each EIN and Connection1, Connection2, Connection3.
+    #??? Probably don't need anymore ?
     connections_set_id = { }
+    
 
     connections_sheet = wb['Transfer Route Components']
     connections_matrix = connections_sheet["F2:H400"]
-    connections_alias_matrix = connections_sheet["I2:K400"]
-    connections_matrix_col = connections_sheet.iter_rows(min_row=2, min_col=6, max_col=8, values_only=True)
-    connections_alias_matrix_col = connections_sheet.iter_rows(min_row=2, min_col=9, max_col=11, values_only=True)
+    
+    #Create existing data structure and new data stucture dataframes so data manipulation is easier. 
+    #Cnx is an abbreviation for connections.
+    dfOriginal = pd.read_excel(filepath, "Transfer Route Components",  index_col=None, na_values='NULL')
+    dfCnx = dfOriginal[["Connection Set ID", "Component", "Connection 1", "Connection 2", "Connection 3", 
+                                                                             "Connection Label 1", "Connection Label 2", "Connection Label 3"]]
+    dfCnx1 = pd.melt(dfCnx, id_vars = ['Component'], 
+                         value_vars = ['Connection 1', 'Connection 2', 'Connection 3'], 
+                         var_name = 'Cnx #', 
+                         value_name = 'Cnx')
+    dfCnxLabels = pd.melt(dfCnx, id_vars = ['Component'], 
+                         value_vars = ['Connection Label 1', 'Connection Label 2', 'Connection Label 3'], 
+                         var_name = 'Label #', 
+                         value_name = 'Cnx Label')
+    #Get the connection number from the variable names
+    dfCnx1['Cnx #'] = dfCnx1['Cnx #'].str.extract('(\d)').astype(int) 
+    dfCnxLabels['Label #'] = dfCnxLabels['Label #'].str.extract('(\d)').astype(int)
+    #Join the connections and label tables and put them in order
+    dfCnx_result = pd.merge(dfCnx1, dfCnxLabels, left_on=['Component', 'Cnx #'], right_on=['Component', 'Label #'])
+    dfCnx_result = dfCnx_result.drop(columns=['Label #'])
+    dfCnx_result = dfCnx_result.sort_values(by=['Component', 'Cnx #']).reset_index(drop=True)
+    dfCnx_result['Cnx Key'] = range(1, len(dfCnx_result) + 1)
+    print(dfCnx_result)
+    #dfCnx_result.to_excel('dfCnx_result.xlsx', index=False)
+
 
     #Initialize component objects into "components" dictionary. Key = Name, value = Component object
     for row in connections_sheet.iter_rows(min_row=2, values_only= True, max_row=350, max_col=15):
@@ -90,26 +116,8 @@ def importComponents(filepath='//hanford/data/sitedata/WasteTransferEng/Waste Tr
                 #if neighbor object != None (might be a reduntant check)
                 if neighbor.value:
                     component.connect(components[neighbor.value])
-                    set_id = int(str(row_index1 + 1) + str(col_index1 + 1))
-                    set_id_dict = {set_id, component}
-                    #keys = set_id_dict.keys()
-                    #print(keys)
-                    #print(f" neighbor loop {set_id} Connected {component} to {components[neighbor.value]}")
-                    
+                    #get cnx key of each neighbor and make a dataframe or dictionary?
 
-    ###Create relationship between connection and what should be printed on the word document on checklist3
-    for row_index, (connections_matrix_row, connections_alias_matrix_row) in enumerate(zip(connections_matrix_col, connections_alias_matrix_col)):
-        for col_index, (connections_matrix_value, connections_alias_matrix_value) in enumerate(zip(connections_matrix_row, connections_alias_matrix_row)):
-            if connections_matrix_value:
-                #This creates a unique key for each connection
-                connections_set_id[component_name] = {
-                 int(str(row_index + 1) + str(col_index + 1)),
-                 connections_matrix_value,
-                 connections_alias_matrix_value
-                }             
-                print(f"connections_set_id[component_name: {connections_set_id[component_name]}")
-
-    print(f"Is the desired variable in connections_set_id? {'{None, \'AZVP-NOZ-E\', 3012}'  in connections_set_id}")
 
     return components, pits, connections_set_id
 importComponents()

@@ -13,9 +13,9 @@ from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
 from ttkthemes import ThemedStyle
-
 import os
 
+save_file_path = os.path.dirname(__file__)
 #messagebox.showinfo(title= None, message = "This is the beginning of main.")
 ### Runs when click "Generate Route Options" button
 def process_route(route):
@@ -69,6 +69,7 @@ def preview_graph():
 
 ### Runs when click "Generate procedure development doc" button.        
 def make_doc():
+    global save_file_path
     src = source.get()
     dst = destination.get()
     writer = DocWriter(src + " to " + dst + " draft procedure data:")
@@ -76,9 +77,11 @@ def make_doc():
     ### SH note about the directory - file automatically goes to whatever folder the program is stored in.
     writer.buildDocument(route_s[listbox_index], route_d[listbox_index], pits)
     try:
-        writer.save(filename)
-        ### SH 2025-03-25 Original code but was throwing error. Changed to os.startfile. Was os.system(f'start {filename}')      
-        os.startfile(filename)       
+        path = save_file_path + "/" + filename
+        print(path)
+        # writer.save(path)
+        writer.save(path)
+        os.startfile(path)
 
     except PermissionError as e:
         if e.errno == 13:
@@ -119,22 +122,28 @@ def load_new_file(*args):
             header_message.set("Using data from: "+ new_file_path)
             components, pits =  ex.importComponents(new_file_path)
     except:
-        messagebox.warning("Warning", "File not supported")
+        messagebox.showwarning("Warning", "File not supported")
         return
+
+
+def choose_save_location(*args):
+    global save_file_path
+    try:
+        save_file_path = filedialog.askdirectory()
+        if (save_file_path):
+            save_location_message.set("Word file will be saved in :\n" + save_file_path)
+    except:
+        messagebox.showwarning("Warning", "Not a valid save location")
+
+    return
 
 ### Loads the UI (appearance),also contains the default source data excel file.
 def main():
-    window = tk.Tk()
-    window.title("Waste Transfer Procedure Tool")
-    style = ThemedStyle(window)
-    style.set_theme("breeze")
-    global file_path
-    #25-03-19 SH change: !!!different file for testing purposes!!!
-    #old file path
-    #file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/1 Transfers/1C - Procedure Review Tools/MasterProcedureData.xlsx'
-    #experimental file path 
-    file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/2 Team Members/Sarah Hunter/transfer-pro - related files/DONT USE MasterProcedureData 2025-03-19.xlsx'
+    defult_excel_file_path = '//hanford/data/sitedata/WasteTransferEng/Waste Transfer Engineering/2 Team Members/Sarah Hunter/transfer-pro - related files/DONT USE MasterProcedureData 2025-03-19.xlsx'
     
+    current_dir = os.path.dirname(__file__)
+    global excel_file_path
+    excel_file_path = defult_excel_file_path
     global components
     
     global pits 
@@ -142,9 +151,9 @@ def main():
     global connections_set_id
 
     try: 
-        components, pits, connections_set_id =  ex.importComponents(file_path)
+        components, pits, connections_set_id =  ex.importComponents(excel_file_path)
     except Exception as e:
-        filewarning ="Unable to find file at:\n\n" + file_path + "\n\n Please browse for Excel data file"
+        filewarning ="Unable to find file at:\n\n" + excel_file_path + "\n\n Please browse for Excel data file"
         messagebox.showwarning("Warning", filewarning)
         components, pits, connections_set_id =  ex.importComponents(browse_file())
     
@@ -157,6 +166,10 @@ def main():
 
     ###UI (appearance) stuff
     #######################################################################################################################
+    window = tk.Tk()
+    window.title("Waste Transfer Procedure Tool")
+    style = ThemedStyle(window)
+    style.set_theme("breeze")
     row_index = 0
     current_dir = os.path.dirname(__file__)
     ###Before "WRPS-new-logo.png"
@@ -174,23 +187,33 @@ def main():
     row_index += 1
     global header_message 
     header_message = tk.StringVar()
-    header_message.set("Using data from: "+ file_path)
+    header_message.set("Using data from: "+ excel_file_path)
     label = ttk.Label(window, textvariable = header_message, wraplength=500, anchor="w", justify= "left")
     label.grid(row = row_index, columnspan=3, rowspan=1, padx=15, pady=10,sticky = "w")
-    file_button = ttk.Button(window, text= "Or use a different file", command=lambda: load_new_file())
+    file_button = ttk.Button(window, text= "Or use a different Excel file", command=lambda: load_new_file())
     file_button.grid(row = row_index, column = 3, padx= 15, pady=10)
     row_index += 1
     sep = tk.ttk.Separator(window, orient='horizontal')
     sep.grid(row = row_index, column = 0,sticky="ew", columnspan = 4)
     row_index += 1
+
+    #####################################################
+    global save_location_message
+    save_location_message = tk.StringVar()
+    save_location_message.set("Word file will be saved in :\n" + current_dir)
+    label = ttk.Label(window, textvariable = save_location_message, wraplength=500, anchor="w", justify= "left")
+    label.grid(row = row_index, columnspan=3, rowspan=1, padx=15, pady=10,sticky = "w")
+    file_button = ttk.Button(window, text= "Or save somewhere else", command=lambda: choose_save_location())
+    file_button.grid(row = row_index, column = 3, padx= 15, pady=10)
+    row_index += 1
     #######################################################################################################################
     global show_all
     show_all = tk.BooleanVar(value=False)
-    # checkbox = ttk.Checkbutton(window, text="Make all components available for selection (valves, nozzles, etc)", variable=show_all, command = toggle_boolean, anchor = "w")
     checkbox = ttk.Checkbutton(window, text="Make all components available for selection (valves, nozzles, etc)", variable=show_all, command = toggle_boolean)
     checkbox.grid(row=row_index, column=0, padx=15, sticky="w")
 
     row_index += 1
+
     #######################################################################################################################
     label = ttk.Label(window, text="1. Select source tank (eg. PUMP):")
     label.grid(row=row_index, column= 0, pady = 2, padx=15,sticky = "w")
@@ -251,7 +274,7 @@ def main():
     row_index +=1
 
     #######################################################################################################################
-    make_document_button = ttk.Button(window, text="6. Generate procedure development doc", command=lambda: make_doc())
+    make_document_button = ttk.Button(window, text="6. Create Transfer Procedure reference sheet", command=lambda: make_doc())
     make_document_button.grid(row=row_index, column= 0, padx = 13, pady=15, sticky="w")
     
     # listbox.bind("<<ListboxSelect>>", preview_graph)
