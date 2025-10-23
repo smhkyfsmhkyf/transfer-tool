@@ -151,11 +151,11 @@ def main():
     global connections_set_id
 
     try: 
-        components, pits, connections_set_id =  ex.importComponents(excel_file_path)
+        components, pits =  ex.importComponents(excel_file_path)
     except Exception as e:
         filewarning ="Unable to find file at:\n\n" + excel_file_path + "\n\n Please browse for Excel data file"
         messagebox.showwarning("Warning", filewarning)
-        components, pits, connections_set_id =  ex.importComponents(browse_file())
+        components, pits =  ex.importComponents(browse_file())
     
     global displayed_nodes 
     displayed_nodes = components.keys()

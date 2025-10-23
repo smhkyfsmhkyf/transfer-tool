@@ -1,5 +1,6 @@
 from collections import deque
 from tkinter import messagebox
+import pandas as pd
 
 class Node:
     connections = []
